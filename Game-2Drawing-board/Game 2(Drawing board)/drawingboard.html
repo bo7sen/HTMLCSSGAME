@@ -1,0 +1,151 @@
+<!doctype html>
+<html>
+    <head>
+        <title></title>
+		<meta charset="utf-8">
+    </head>
+    <body onload="draw();">
+        <canvas id="mycan" width="540" height="540">
+		</canvas>
+		
+		<div style="float:right;">
+			<input type="button" class="btn"  id="000000"style="background-color:#000000;border-color:#000000;"onclick="btnClick(this)">
+			<br>
+			<input type="button" class="btn" id="072591"style="background-color:#072591;border-color:#072591;"onclick="btnClick(this)">
+			<br>
+			<input type="button" class="btn" id="003366"style="background-color:#003366;border-color:#003366;"onclick="btnClick(this)">
+			<br>
+			<input type="button" class="btn" id="666666"style="background-color:#666666;border-color:#666666;"onclick="btnClick(this)">
+			<br>
+			<input type="button" class="btn" id="800000"style="background-color:#800000;border-color:#800000;"onclick="btnClick(this)">
+			<br>
+			<input type="button" class="btn" id="660066"style="background-color:#660066;border-color:#660066;"onclick="btnClick(this)">
+			<br>
+			<input type="button" class="btn" id="191970"style="background-color:#191970;border-color:#191970;"onclick="btnClick(this)">
+			<br>
+			<input type="button" class="btn" id="ff00ff"style="background-color:#ff00ff;border-color:#ff00ff;"onclick="btnClick(this)">
+			<br>
+			<input type="button" class="btn"id="f08080"style="background-color:#f08080;border-color:#f08080;"onclick="btnClick(this)">
+			<br>
+			<input type="button" class="btn" id="ffff00"style="background-color:#ffff00;border-color:#ffff00;"onclick="btnClick(this)">
+			<br>
+			<input type="button" class="btn" id="ffffff"style="background-color:#ffffff;border-color:#ffffff;"onclick="btnClick(this)">
+		</div>	
+		
+		<div>
+			<input type="file" id="fileInput" />
+		</div>
+		<div style="width:20px;display:block;" id="measure">
+		
+		</div>
+		<style>
+			.btn
+			{
+				border-radius:50%;
+				width:50px;
+				height:50px;
+			}
+			#mycan
+			{
+				-webkit-box-shadow:0 0 20px #000;
+				box-shadow:0 0 20px #000;
+			}
+			body
+			{
+				background-image:url("hd.jpeg");
+				background-repeat:no-repeat;
+				background-size:100% 100%;
+			}
+		</style>
+    </body>
+    <script>
+	
+	var flage = 2;
+	var x,y,img;
+	var curx,cury;
+	var color;
+	var canvas = document.getElementById('mycan');
+	var ctx = canvas.getContext('2d');
+	document.getElementById('fileInput').addEventListener('change', imageLoader);
+	canvas.style.cursor = "crosshair";
+		function imageLoader() {
+			var reader = new FileReader();
+			reader.onload = function(event) {
+				var img = new Image();
+				img.onload = function(){
+					var ct = document.getElementById('measure'); 
+					ct.appendChild(img);
+					var wrh = img.width / img.height;
+					var newWidth = canvas.width;
+					var newHeight = newWidth / wrh;
+					if (newHeight > canvas.height) {
+						newHeight = canvas.height;
+						newWidth = newHeight * wrh;
+					}
+					ct.removeChild(img);
+					ctx.drawImage(img,0,0, newWidth , newHeight);
+				}
+				img.src = reader.result;
+			}
+			reader.readAsDataURL(fileInput.files[0]);
+		}
+		function draw()
+		{
+			context = canvas.getContext("2d");
+			img = new Image();
+			img.src = "dragon.jpg";
+			context.drawImage(img, 0, 0, img.width,img.height,0, 0, canvas.width, canvas.height);
+			//context.drawImage(img, 0, 0);
+		}
+		canvas.onmousemove= function(event)
+		{
+			if(flage==0)
+			{
+				fillStyle = color;
+				context.fillRect(event.screenX,event.screenY,5,5);
+			}	
+			else if(flage==1)
+			{
+				fillStyle = "rgb(255, 255, 0)";
+				context.fillRect(event.screenX,event.screenY,5,5);
+			}	
+		};
+		canvas.onmousedown = function(event)
+		{
+			switch (event.which) 
+			{
+				case 1:
+					//Left Mouse
+					flage=0;
+					x=event.screenX;
+					y=event.screenY;
+					//alert("X:"+x+",Y:"+y);
+					break;
+				case 2:
+					//Middle Mouse
+					flage=1;
+					x=event.screenX;
+					y=event.screenY;
+					break;
+				case 3:
+					//Right Mouse
+					break;
+			}	
+		}
+		canvas.onmouseup = function(event)
+		{
+			flage=2;
+		}
+		function btnClick(obj)
+		{
+			//fillStyle = obj.style.backgroundColor;
+			var aaaa = obj.id;
+			context.fillStyle ="#" +aaaa;
+			//color = fillStyle;
+			//context.strokeStyle = color;
+			//context.stroke();
+			//alert(color);
+		}	
+		
+    </script>
+</html>
