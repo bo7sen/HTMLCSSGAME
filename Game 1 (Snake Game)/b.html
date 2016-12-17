@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<title>Snake Game</title>
+		<link rel="shortcut icon" href="snake.gif" />
+		<style>
+			#mycan
+			{
+				margin-left:30%;
+				margin-top:100px;
+			}
+			@font-face 
+			{ 
+				font-family: myFirstFont; 
+				src: url('slkscreb.ttf');
+			}
+			.S
+			{
+				font-size:20px;
+				font-family:myFirstFont;
+				color:white;
+			}
+		</style>
+	</head>
+	<body onload="load();start();" style="background-image:url('greengrass.jpg');background-size:100% 100%;">
+		<canvas id="mycan" width="450" height="450"></canvas>
+		<audio id="myaudio" loop>
+			<source src="audio/main.mp3" type="audio/mp3" />
+			<source src="audio/main.ogg" type="audio/ogg"/>
+		</audio>
+		
+		<audio id="food" >
+			<source src="audio/food.mp3" type="audio/mp3" />
+			<source src="audio/food.ogg" type="audio/ogg"/>
+		</audio>
+		
+		<audio id="death" >
+			<source src="audio/go.mp3" type="audio/mp3" />
+			<source src="audio/go.ogg" type="audio/ogg"/>
+		</audio>
+		<br>
+		<center>
+			<span class="S">
+				Your Score :
+			</span>
+			<span id="score" class="S">
+				0
+			</span>
+		</center>
+		<script>
+			var canvas = document.getElementById("mycan");
+			var ctx = canvas.getContext("2d");
+			var w = 450;
+			var h = 450;
+			
+			var cellWedith = 10;
+			var direction;
+			var food;
+			var score;
+			
+			var snake_array;
+			function load()
+			{
+				init();
+			}
+			
+			function init()
+			{
+				direction = "right"; 
+				create_snake();
+				create_food();
+				
+				score = 0;
+				
+				if(typeof game_loop != "undefined") 
+					clearInterval(game_loop);
+				
+				game_loop = setInterval(paint, 100);
+				
+							
+			}
+			
+			function create_snake()
+			{
+				var length = 5; 
+				snake_array = [];
+				for(var i = length-1; i>=0; i--)
+				{
+					snake_array.push({x: i, y:0});
+				}
+			}
+			
+			function create_food()
+			{
+				food = {
+					x: Math.round(Math.random()*(w-cellWedith)/cellWedith), 
+					y: Math.round(Math.random()*(h-cellWedith)/cellWedith), 
+				};
+			}
+			
+			function paint()
+			{
+				ctx.fillStyle = "white";
+				ctx.fillRect(0, 0, w, h);
+				ctx.strokeStyle = "black";
+				ctx.strokeRect(0, 0, w, h);
+				
+				var nx = snake_array[0].x;
+				var ny = snake_array[0].y;
+				
+				if(direction == "right") nx++;
+				else if(direction == "left") nx--;
+				else if(direction == "up") ny--;
+				else if(direction == "down") ny++;
+				
+				if(nx == -1 || nx == w/cellWedith || ny == -1 || ny == h/cellWedith || check_collision(nx, ny, snake_array))
+				{
+				document.getElementById("myaudio").pause();
+					document.getElementById("death").play();
+					alert("Your Score : "+score);
+					init();
+					document.getElementById("myaudio").play();
+					return;
+				}
+				
+				if(nx == food.x && ny == food.y)
+				{
+					var tail = {x: nx, y: ny};
+					score++;
+					document.getElementById("score").innerHTML=" "+score;
+					document.getElementById("food").play();
+					create_food();
+				}
+				else
+				{
+					var tail = snake_array.pop();
+					tail.x = nx; tail.y = ny;
+				}
+				
+				snake_array.unshift(tail);
+				
+				for(var i = 0; i < snake_array.length; i++)
+				{
+					var c = snake_array[i];
+					paint_cell(c.x, c.y);
+				}
+				
+				paint_cell(food.x, food.y);
+				ctx.fillText(score_text, 5, h-5);
+			}
+			
+			function paint_cell(x, y)
+			{
+				ctx.fillStyle = "green";
+				ctx.fillRect(x*cellWedith, y*cellWedith, cellWedith, cellWedith);
+				ctx.strokeStyle = "white";
+				ctx.strokeRect(x*cellWedith, y*cellWedith, cellWedith, cellWedith);
+			}
+			
+			function check_collision(x, y, array)
+			{
+				for(var i = 0; i < array.length; i++)
+				{
+					if(array[i].x == x && array[i].y == y)
+					{
+						document.getElementById("death").play();
+						return true;
+					 }
+				}
+				return false;
+			}
+			
+			function move(e){
+				var key = e.which;
+
+				if(key == "37" && direction != "right") 
+					direction = "left";
+				else if(key == "38" && direction != "down") 
+					direction = "up";
+				else if(key == "39" && direction != "left")
+					direction = "right";
+				else if(key == "40" && direction != "up") 
+					direction = "down";
+			}
+			function start()
+				{
+					window.addEventListener('keydown', move);
+					document.getElementById("myaudio").play();
+				}
+		</script>
+	</body>
+</html>
